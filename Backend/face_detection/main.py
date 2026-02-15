@@ -3,6 +3,7 @@ from raw.landmarks import LandmarkViewer
 from drowsiness.main import DrowsinessDetector
 from attention.main import AttentionDetector
 from stress.main import StressDetector
+from confusion.main import ConfusionDetector
 
 import cv2
 import numpy as np
@@ -12,6 +13,7 @@ landmark_view = LandmarkViewer()
 drowsy = DrowsinessDetector()
 attention = AttentionDetector()
 stress = StressDetector()
+confusion = ConfusionDetector()
 
 cap = cv2.VideoCapture(0)
 
@@ -35,17 +37,18 @@ while True:
     sleep_frame = drowsy.process(frame.copy())
     attention_frame = attention.process(frame.copy())
     stress_frame = stress.process(frame.copy())
-    placeholder_frame = raw_view.process(frame.copy())
+    # placeholder_frame = raw_view.process(frame.copy())
+    confusion_frame = confusion.process(frame.copy())
 
     raw_frame = resize_frame(raw_frame)
     landmark_frame = resize_frame(landmark_frame)
     sleep_frame = resize_frame(sleep_frame)
     attention_frame = resize_frame(attention_frame)
     stress_frame = resize_frame(stress_frame)
-    placeholder_frame = resize_frame(placeholder_frame)
+    confusion_frame = resize_frame(confusion_frame)
 
     top_row = np.hstack((raw_frame, landmark_frame, sleep_frame))
-    bottom_row = np.hstack((attention_frame, stress_frame, placeholder_frame))
+    bottom_row = np.hstack((attention_frame, stress_frame, confusion_frame))
     dashboard = np.vstack((top_row, bottom_row))
 
     #fit to screen size
