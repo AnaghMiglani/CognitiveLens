@@ -108,12 +108,11 @@ class ConfusionDetector:
         yaw_score = min(100, yaw_rate * 40)
 
         confusion_score = (
-            0.25 * raise_score +
-            0.15 * inward_score +
+            0.30 * inward_score +
             0.15 * asymmetry_score +
             0.20 * tilt_score +
-            0.15 * squint_score +
-            0.10 * yaw_score
+            0.20 * squint_score +
+            0.15 * yaw_score
         )
 
         confusion_score = min(100, confusion_score)

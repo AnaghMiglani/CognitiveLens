@@ -12,28 +12,37 @@ def to_pixel(landmark, shape):
 
 def compute_brow_metrics(landmarks, shape):
 
-    left_brow = to_pixel(landmarks[70], shape)
-    right_brow = to_pixel(landmarks[300], shape)
+    #outer brow corners
+    outer_left = to_pixel(landmarks[70], shape)
+    outer_right = to_pixel(landmarks[300], shape)
 
+    #inner brow corners (important for confusion)
+    inner_left = to_pixel(landmarks[105], shape)
+    inner_right = to_pixel(landmarks[334], shape)
+
+    #eye reference points
     left_eye_top = to_pixel(landmarks[159], shape)
     right_eye_top = to_pixel(landmarks[386], shape)
 
-    inner_left_brow = to_pixel(landmarks[105], shape)
-    inner_right_brow = to_pixel(landmarks[334], shape)
+    inner_dist = euclidean(inner_left, inner_right)
 
-    #vertical raise
-    left_raise = euclidean(left_brow, left_eye_top)
-    right_raise = euclidean(right_brow, right_eye_top)
+    outer_dist = euclidean(outer_left, outer_right)
 
-    avg_raise = (left_raise + right_raise) / 2.0
+    #normalized compression ratio (scale independent)
+    if outer_dist != 0:
+        compression_ratio = inner_dist / outer_dist
+    else:
+        compression_ratio = 1
 
-    asymmetry = abs(left_raise - right_raise)
+    left_inner_drop = left_eye_top[1] - inner_left[1]
+    right_inner_drop = right_eye_top[1] - inner_right[1]
+    avg_inner_drop = (left_inner_drop + right_inner_drop) / 2
 
-    inward_distance = euclidean(inner_left_brow, inner_right_brow)
+    asymmetry = abs(left_inner_drop - right_inner_drop)
 
-    return avg_raise, asymmetry, inward_distance, [
-        left_brow, right_brow,
-        inner_left_brow, inner_right_brow
+    return compression_ratio, avg_inner_drop, asymmetry, [
+        outer_left, outer_right,
+        inner_left, inner_right
     ]
 
 def compute_head_tilt(landmarks, shape):
